@@ -117,7 +117,7 @@
         </div>
         <div class="filters" id="filters">
           <label><input type="checkbox" data-f="acc" checked><span class="sw acc"></span>숙소</label>
-          <label><input type="checkbox" data-f="jjim" checked><span class="sw jjim"></span>찜질방·사우나</label>
+          <label><input type="checkbox" data-f="jjim" checked><span class="sw jjim"></span>찜질방·온천</label>
           <label><input type="checkbox" data-f="trail" checked><span class="sw trail"></span>한라산</label>
           <label><input type="checkbox" data-f="mart" checked><span class="sw mart"></span>마트·편의점</label>
         </div>
@@ -151,6 +151,24 @@
     <h2>📊 비교표</h2>
     <div class="note" style="margin:-4px 0 10px;font-size:.86rem"><span class="ok">◎</span> 좋음 · <span class="mid">△</span> 보통 · <span class="no">✕</span> 없음/멂</div>
     <div class="tablewrap"><table id="tbl"></table></div>
+  </section>
+
+  <section>
+    <h2>♨️ 등산 후 갈 곳 (찜질방·온천)</h2>
+    <div class="note" style="margin:-4px 0 10px;font-size:.86rem">1월엔 성판악·관음사 대피소에서 오후 3:30까지 내려와야 해서, 하산하면 보통 오후 4~6시예요. 아래는 모두 저녁 9시 이후까지 열어요 (운영시간은 구글 지도 기준이라 가기 전에 한 번 더 확인).</div>
+    <div class="tablewrap"><table>
+      <tr><th>이름</th><th>종류</th><th>위치</th><th>운영시간</th><th>성판악에서(차)</th><th>메모</th></tr>
+      <tr><td><b>봉개사우나</b></td><td>목욕탕</td><td>제주시 봉개동</td><td>확인 필요</td><td><b>약 20분</b></td><td>성판악→제주시 가는 길목. 저렴함. 시설은 동네 목욕탕</td></tr>
+      <tr><td><b>오레브 핫스프링&amp;스파</b></td><td>온천·찜질방</td><td>서귀포 (JW 메리어트)</td><td>10:00~22:00</td><td>약 35분</td><td>고급스럽고 넓음. 야외 온천은 수영복 필요. 비싼 편(약 5만 원)</td></tr>
+      <tr><td><b>그랜드하이엇 찜질스파</b></td><td>찜질방</td><td>제주시 신제주</td><td>06:00~익일 02:00</td><td>약 40분</td><td>깔끔함. ⑤에서 가까움</td></tr>
+      <tr><td><b>롯데 불가마 사우나</b></td><td>찜질방</td><td>제주시 연동</td><td>05:00~22:00</td><td>약 40분</td><td>오래됐지만 저렴</td></tr>
+      <tr><td><b>부림온천</b></td><td>목욕탕(온천)</td><td>제주시 연동</td><td>05:30~23:00</td><td>약 40분</td><td>둘째·넷째 화요일 휴무. 온천수 중단 공지 후기 있어 확인 필요</td></tr>
+      <tr><td><b>용두암 해수랜드</b></td><td>해수탕·찜질방</td><td>제주시 용두암</td><td>05:00~22:00</td><td>약 40분</td><td>바다 보이는 휴게실. ④에서 가까움</td></tr>
+      <tr><td><b>도두해수파크</b></td><td>해수탕·찜질방</td><td>제주시 도두 (공항 근처)</td><td>24시간</td><td>약 45분</td><td>현지인 위주</td></tr>
+      <tr><td><b>제주 참숯가마 찜질방</b></td><td>찜질방</td><td>성산 삼달리</td><td>24시간</td><td>약 40분</td><td>진짜 참숯 가마. 탕 없이 샤워만. ②·⑧에서 가까움</td></tr>
+      <tr><td><b>김녕 용암해수사우나</b></td><td>목욕탕</td><td>구좌 김녕</td><td>06:00~21:00</td><td>약 45분</td><td>해수탕. 찜질방은 없음</td></tr>
+      <tr><td><b>산방산 탄산온천</b></td><td>온천·찜질방</td><td>서귀포 안덕 (남서쪽)</td><td>06:00~23:00</td><td>약 1시간 10분</td><td>천연 탄산온천 + 야외 노천탕(남녀 공용, 수영복 필요). 등산 날보다 다른 날 일정으로 추천</td></tr>
+    </table></div>
   </section>
 
   <section>
@@ -200,8 +218,13 @@ const PLACES = [
  {t:'jjim',n:'그랜드하이엇 찜질스파',lng:126.4814,lat:33.4852,s:'신제주(그랜드하이엇 6층) · 06:00~익일 02:00 · 깔끔한 편'},
  {t:'jjim',n:'롯데 불가마 사우나',lng:126.4897,lat:33.4874,la:'r2',s:'연동 · 05:00~22:00 · 찜질방 있음 · 오래됐지만 저렴'},
  {t:'jjim',n:'도두해수파크',lng:126.4713,lat:33.5085,s:'공항 근처 · 24시간 · 해수 사우나+찜질방'},
- {t:'jjim',n:'제주 참숯가마 찜질방',lng:126.8635,lat:33.3692,s:'성산 삼달리 · 24시간 · 진짜 참숯 가마, 탕은 없고 샤워만 (후기 기준 성인 15,000원)'},
- {t:'jjim',n:'김녕 용암해수사우나',lng:126.7559,lat:33.5566,s:'구좌 김녕 · 06:00~21:00 · 목욕탕(찜질방은 아님)'},
+ {t:'jjim',n:'제주 참숯가마 찜질방',lab:'참숯가마',lng:126.8635,lat:33.3692,s:'성산 삼달리 · 24시간 · 진짜 참숯 가마, 탕은 없고 샤워만 (후기 기준 성인 15,000원)'},
+ {t:'jjim',n:'김녕 용암해수사우나',lab:'김녕 해수사우나',lng:126.7559,lat:33.5566,s:'구좌 김녕 · 06:00~21:00 · 목욕탕(찜질방은 아님)'},
+ {t:'jjim',n:'산방산 탄산온천',lab:'산방산 탄산온천',lng:126.2988,lat:33.2489,s:'서귀포 안덕 · 06:00~23:00 · 천연 탄산온천 + 야외 노천탕(남녀 공용, 수영복 필요) · 찜질방은 추가 요금 · 성판악에서 차로 약 1시간 10분'},
+ {t:'jjim',n:'용두암 해수랜드',lng:126.5042,lat:33.5160,s:'제주시 용두암 · 05:00~22:00 · 해수탕+찜질방, 바다 보이는 휴게실 · ④에서 차로 약 10분'},
+ {t:'jjim',n:'부림온천',lng:126.4913,lat:33.4759,s:'제주시 연동 · 05:30~23:00 · 둘째·넷째 화요일 휴무 · "온천수 당분간 중단" 공지가 있었다는 후기 있음'},
+ {t:'jjim',n:'오레브 핫스프링&스파',lab:'오레브',lng:126.5381,lat:33.2445,s:'서귀포 (JW 메리어트) · 10:00~22:00 · 고급 온천 스파+찜질방, 야외 온천(수영복) · 비싼 편(후기 약 5만 원) · 성판악에서 차로 약 35분'},
+ {t:'jjim',n:'봉개사우나',lab:'봉개사우나',lng:126.6014,lat:33.4854,s:'제주시 봉개동 · 성판악→제주시 가는 길목(성판악에서 차로 약 20분) · 동네 목욕탕, 저렴함 · 운영시간 미리 확인'},
  // 한라산
  {t:'trail',n:'성판악 탐방로 입구',lng:126.6192,lat:33.3849,s:'정상 코스 · 왕복 약 19.2km · 완만하지만 가장 김 · 예약 필수'},
  {t:'trail',n:'관음사 탐방로 입구',lng:126.5491,lat:33.4202,s:'정상 코스 · 왕복 약 17.4km · 더 가파름 · 예약 필수'},
@@ -221,7 +244,7 @@ const ACC = [
  {id:1,name:'애월 펜션',sub:'공감공간 애월 2호점',kind:'air',area:'제주시 애월읍 신엄리 (포구 마을, 바다 앞)',
   price:'30~42만 원',priceNote:'객실별: B-201 30만 · B-302 31.5만 · A-201·A-402 42만',
   room:'객실마다 퀸 침대 2개 · 욕실 1개(B-201은 1.5개)',rating:'4.86점 (후기 65개)',
-  hal:['mid','관음사 약 35분 / 성판악 약 55분'],mart:['ok','좋은마트(06~22시), CU 중엄점(24시)'],jjim:['no','근처 없음 · 신제주까지 차로 약 25분'],
+  hal:['mid','관음사 약 35분 / 성판악 약 55분'],mart:['ok','좋은마트(06~22시), CU 중엄점(24시)'],jjim:['no','근처 없음 · 신제주 약 25분 / 산방산 탄산온천 약 45분'],
   tips:['객실마다 가격 차이가 커요 (30만 vs 42만)','침구는 기준 4인, 추가 침구는 1박 1만 원','체크인 16시 / 체크아웃 11시','오픈한 지 얼마 안 된 숙소'],
   url:'https://www.airbnb.co.kr/rooms/1775894011756264401?check_in=2027-01-21&check_out=2027-01-24&adults=3'},
  {id:2,name:'성산 아이니하우스',sub:'무료감귤체험 · 바베큐불멍',kind:'air',area:'서귀포시 성산읍 · 성산일출봉·광치기해변 근처',
@@ -239,13 +262,13 @@ const ACC = [
  {id:4,name:'동문시장 근처 아파트',sub:'이도1동 · 오락실 있는 큰 집',kind:'air',best:true,area:'제주시 이도1동 · 신산공원 근처 · 동문시장 차로 5분 · 공항 10분',
   price:'약 29만 원',priceNote:'',
   room:'침실 1개 · 더블 1개 + 소파베드 4개 · 욕실 1개 · 최대 4명',rating:'4.89점 (후기 245개) · 슈퍼호스트',
-  hal:['ok','관음사 약 20분 / 성판악 약 35분 (가장 가까움)'],mart:['ok','마트로 이도센트럴점(24시)'],jjim:['ok','신제주 찜질방·도두해수파크 차로 약 15분'],
+  hal:['ok','관음사 약 20분 / 성판악 약 35분 (가장 가까움)'],mart:['ok','마트로 이도센트럴점(24시)'],jjim:['ok','용두암 해수랜드 차로 약 10분 · 신제주 찜질방·도두해수파크 약 15분'],
   tips:['평점이 가장 높음','침대 대부분이 소파베드','버스 정류장 도보 1분','세탁기·무료 주차(건물 주차장)·넷플릭스'],
   url:'https://www.airbnb.co.kr/rooms/1061383735928300198?check_in=2027-01-21&check_out=2027-01-24&adults=3'},
  {id:5,name:'신제주집 5호',sub:'제주 신시가지 아파트',kind:'air',best:true,area:'제주시 연동 · 신라·롯데면세점 도보 5분 · 공항 택시 10분',
   price:'약 23만 원',priceNote:'후보 중 가장 저렴',
   room:'침실 2개 · 슈퍼싱글 2 + 소파베드 1 + 에어매트 · 욕실 1개 · 최대 4명',rating:'4.72점 (후기 266개)',
-  hal:['ok','관음사 약 25분 / 성판악 약 40분'],mart:['ok','이마트 신제주점(~23시), 하나로마트 노형점'],jjim:['ok','그랜드하이엇 찜질스파·롯데불가마 차로 5분 이내'],
+  hal:['ok','관음사 약 25분 / 성판악 약 40분'],mart:['ok','이마트 신제주점(~23시), 하나로마트 노형점'],jjim:['ok','그랜드하이엇 찜질스파·롯데불가마·부림온천 차로 5분 이내'],
   tips:['주차타워라 일반 승용차만 가능 — RV·SUV 렌트하면 주차 불가!','초과 인원은 강제 퇴실 (3명은 OK)','다세대 건물이라 술파티·층간소음 금지','체크인 16시 이후'],
   url:'https://www.airbnb.co.kr/rooms/40808752?check_in=2027-01-21&check_out=2027-01-24&adults=3'},
  {id:6,name:'신신호텔 제주시티',sub:'',kind:'hotel',area:'제주시 해안동 (공항 남쪽)',
@@ -307,6 +330,7 @@ function render(){
     }else if(type==='jjim'){
       const w=24*s; g.appendChild(el('rect',{x:x-w/2,y:y-w/2,width:w,height:w,rx:5*s,fill:'#ea580c',stroke:'#fff','stroke-width':2.5*s}));
       const t=el('text',{x,y:y+5.5*s,'text-anchor':'middle','font-size':15*s,fill:'#fff'});t.textContent='♨';g.appendChild(t);
+      if(!zoomed&&p.lab){const l=el('text',{x:x+15,y:y+5,'font-size':12,class:'lbl','stroke-width':3.5,fill:'#9a3412'});l.textContent=p.lab;g.appendChild(l);}
       if(zoomed){const l=el('text',{x:x+16*s,y:y+(p.la==='r2'?-4:5)*s,'font-size':12.5*s,class:'lbl','stroke-width':3.5*s,fill:'#9a3412'});l.textContent=p.n;g.appendChild(l);}
     }else if(type==='trail'){
       const h=18*s; g.appendChild(el('polygon',{points:`${x},${y-h} ${x-h*0.75},${y+h*0.5} ${x+h*0.75},${y+h*0.5}`,fill:'#15803d',stroke:'#fff','stroke-width':2*s}));
@@ -332,7 +356,7 @@ function render(){
     });
   }
 }
-const TYPE_LABEL={acc:'🏠 숙소',jjim:'♨️ 찜질방·사우나',trail:'⛰️ 한라산',peak:'⛰️ 한라산',mart:'🛒 마트·편의점'};
+const TYPE_LABEL={acc:'🏠 숙소',jjim:'♨️ 찜질방·온천·사우나',trail:'⛰️ 한라산',peak:'⛰️ 한라산',mart:'🛒 마트·편의점'};
 function select(p){
   info.innerHTML=`<span style="color:#6b7280;font-size:.8rem">${TYPE_LABEL[p.t]}</span><br><b>${p.n}</b>${p.s?'<br>'+p.s:''}${p.t==='acc'?'<br><a href="#acc-'+p.id+'" style="color:#2563eb;font-size:.85rem">↓ 숙소 카드 보기</a>':''}`;
   if(p.t==='acc'){highlight(p.id); if(OUT[p.id]) info.innerHTML+='<br><span style="color:#b91c1c;font-size:.85rem">✕ 후보에서 뺌'+(OUT[p.id].reason?' — '+esc(OUT[p.id].reason):'')+'</span>';}
