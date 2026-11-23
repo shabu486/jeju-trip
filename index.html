@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>제주 숙소 후보 · 한라산 · 찜질방 지도</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --acc:#2563eb; --jjim:#ea580c; --trail:#15803d; --mart:#6b7280;
+    --ink:#1f2937; --sub:#6b7280; --line:#e5e7eb; --bg:#f8fafc; --card:#fff;
+    --sea:#e3eef7; --land:#eef3e4; --coast:#a3b18a;
+  }
+  *{box-sizing:border-box}
+  body{margin:0;font-family:'Noto Sans KR',system-ui,sans-serif;color:var(--ink);background:var(--bg);line-height:1.55}
+  .wrap{max-width:1080px;margin:0 auto;padding:20px 16px 48px}
+  header h1{font-size:1.5rem;margin:0 0 4px}
+  header p{margin:0;color:var(--sub);font-size:.92rem}
+  .trip{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+  .chip{background:#fff;border:1px solid var(--line);border-radius:999px;padding:3px 12px;font-size:.85rem}
+  section{margin-top:26px}
+  h2{font-size:1.15rem;margin:0 0 10px}
+  .mapbox{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:12px}
+  .toolbar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:space-between;margin-bottom:8px}
+  .views button,.filters label{font:inherit;font-size:.85rem}
+  .views button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 12px;cursor:pointer}
+  .views button.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+  .filters{display:flex;flex-wrap:wrap;gap:10px}
+  .filters label{display:flex;align-items:center;gap:5px;cursor:pointer;user-select:none}
+  .sw{display:inline-block;width:14px;height:14px}
+  .sw.acc{background:var(--acc);border-radius:50%}
+  .sw.jjim{background:var(--jjim);border-radius:4px}
+  .sw.trail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid var(--trail)}
+  .sw.mart{background:var(--mart);border-radius:50%;width:10px;height:10px}
+  svg{width:100%;height:auto;display:block;border-radius:10px;background:var(--sea);touch-action:manipulation}
+  .mk{cursor:pointer}
+  .mk text{pointer-events:none}
+  .lbl{font-weight:700;paint-order:stroke;stroke:#fff;stroke-linejoin:round}
+  .info{margin-top:10px;min-height:48px;background:#f9fafb;border:1px dashed var(--line);border-radius:10px;padding:10px 12px;font-size:.9rem}
+  .info b{font-size:.98rem}
+  .note{color:var(--sub);font-size:.8rem;margin-top:6px}
+  .cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(310px,1fr));gap:12px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 15px;scroll-margin-top:12px;transition:box-shadow .2s,border-color .2s}
+  .card.hl{border-color:var(--acc);box-shadow:0 0 0 3px rgba(37,99,235,.18)}
+  .card .top{display:flex;gap:10px;align-items:flex-start}
+  .num{flex:none;width:30px;height:30px;border-radius:50%;background:var(--acc);color:#fff;font-weight:700;display:flex;align-items:center;justify-content:center}
+  .card h3{margin:0;font-size:1rem}
+  .card .area{color:var(--sub);font-size:.82rem}
+  .tag{display:inline-block;font-size:.72rem;border-radius:6px;padding:1px 7px;margin-left:4px;vertical-align:middle}
+  .tag.air{background:#ffe4e6;color:#be123c}.tag.hotel{background:#ede9fe;color:#6d28d9}
+  .tag.best{background:#dcfce7;color:#166534}
+  .price{font-size:1.15rem;font-weight:700;margin:8px 0 4px}
+  dl{margin:6px 0 0;display:grid;grid-template-columns:62px 1fr;gap:3px 8px;font-size:.86rem}
+  dt{color:var(--sub)} dd{margin:0}
+  .ok{color:#15803d;font-weight:700}.mid{color:#b45309;font-weight:700}.no{color:#b91c1c;font-weight:700}
+  .tips{margin:10px 0 0;padding:9px 11px 9px 26px;background:#fffbeb;border-radius:9px;font-size:.84rem}
+  .tips li{margin:2px 0}
+  .card a{color:var(--acc);font-size:.85rem;text-decoration:none;display:inline-block;margin-top:8px}
+  .panel{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px 16px;font-size:.92rem}
+  .panel ul{margin:6px 0;padding-left:20px}
+  table{width:100%;border-collapse:collapse;font-size:.86rem;background:#fff}
+  th,td{border-bottom:1px solid var(--line);padding:7px 8px;text-align:left;vertical-align:top}
+  th{background:#f3f4f6;font-weight:500;white-space:nowrap}
+  .tablewrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+  .pick{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 14px}
+  .pick .row{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+  .pc{border:1px solid #bfdbfe;background:#eff6ff;color:#1e40af;border-radius:999px;padding:3px 11px;font-size:.85rem;cursor:pointer;font:inherit;font-size:.85rem}
+  .pc.x{background:#f3f4f6;border-color:#e5e7eb;color:#9ca3af;text-decoration:line-through}
+  .pick .cnt{font-weight:700;margin-right:4px}
+  .pick .mode{color:var(--sub);font-size:.8rem;margin-top:8px}
+  .pick .reset{margin-left:auto;border:none;background:none;color:var(--sub);font:inherit;font-size:.8rem;cursor:pointer;text-decoration:underline}
+  .card.out{opacity:.5;background:#f9fafb}
+  .card.out h3{text-decoration:line-through}
+  .card.out .num{background:#9ca3af}
+  .ctl{margin-top:10px;padding-top:10px;border-top:1px dashed var(--line);display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .ctl button{font:inherit;font-size:.84rem;border-radius:8px;padding:5px 12px;cursor:pointer;border:1px solid #fecaca;background:#fff5f5;color:#b91c1c}
+  .card.out .ctl button{border-color:#bfdbfe;background:#eff6ff;color:#1d4ed8}
+  .ctl input{flex:1;min-width:150px;font:inherit;font-size:.84rem;border:1px solid var(--line);border-radius:8px;padding:5px 9px}
+  .card.out .ctl{opacity:1}
+  .reason{font-size:.84rem;color:#b91c1c;margin-top:6px}
+  tr.out td{color:#9ca3af;text-decoration:line-through}
+  button:disabled{opacity:.5;cursor:not-allowed}
+  footer{margin-top:28px;color:var(--sub);font-size:.8rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>🍊 제주 숙소 후보 정리</h1>
+    <p>한라산 등반 · 근처 마트 · 등산 후 찜질방 기준으로 비교</p>
+    <div class="trip">
+      <span class="chip">📅 2027.01.21(목) ~ 01.24(일) · 3박 4일</span>
+      <span class="chip">👥 3명</span>
+      <span class="chip">💰 3박 총액, 만 원 단위 올림</span>
+    </div>
+  </header>
+
+  <section>
+    <h2>✅ 후보 고르기 (소거법)</h2>
+    <div class="pick">
+      <div class="row" id="pickrow"></div>
+      <div class="mode" id="mode">불러오는 중…</div>
+    </div>
+    <div class="note">아래 숙소 카드의 <b>✕ 후보에서 빼기</b>를 누르면 지도·표·카드에서 회색으로 바뀌고 뒤로 밀려나요. 빼는 이유도 적어둘 수 있어요.</div>
+  </section>
+
+  <section>
+    <h2>🗺️ 지도</h2>
+    <div class="mapbox">
+      <div class="toolbar">
+        <div class="views" id="views">
+          <button data-v="all" class="on">제주 전체</button>
+          <button data-v="city">제주시 확대</button>
+          <button data-v="east">성산·구좌 확대</button>
+          <button data-v="aewol">애월 확대</button>
+        </div>
+        <div class="filters" id="filters">
+          <label><input type="checkbox" data-f="acc" checked><span class="sw acc"></span>숙소</label>
+          <label><input type="checkbox" data-f="jjim" checked><span class="sw jjim"></span>찜질방·사우나</label>
+          <label><input type="checkbox" data-f="trail" checked><span class="sw trail"></span>한라산</label>
+          <label><input type="checkbox" data-f="mart" checked><span class="sw mart"></span>마트·편의점</label>
+        </div>
+      </div>
+      <svg id="map" viewBox="0 0 1000 557" role="img" aria-label="제주도 숙소와 찜질방 위치 지도"></svg>
+      <div class="info" id="info">지도의 표시를 누르면 정보가 여기에 나와요. 숙소 번호를 누르면 아래 카드로 이동해요.</div>
+      <div class="note">※ 해안선은 대략적인 모양이에요. 에어비앤비(①~⑤)는 정확한 주소가 공개되지 않아 동네 기준 대략 위치로 표시했어요. 이동 시간은 자동차 기준 대략치예요. 겹쳐 보이는 곳은 위의 확대 버튼으로 보면 구분돼요.</div>
+    </div>
+  </section>
+
+  <section>
+    <h2>⭐ 한눈에 추천</h2>
+    <div class="panel">
+      세 가지 조건(한라산 · 마트 · 찜질방)을 다 따지면 <b>제주시 쪽 숙소가 확실히 유리</b>해요.
+      <ul>
+        <li><b>⑤ 신제주집 (약 23만)</b> — 제일 저렴하고, 찜질방(그랜드하이엇 찜질스파 · 롯데불가마)과 이마트가 바로 옆. 등산하고 내려와서 바로 찜질방 가기 최고.</li>
+        <li><b>④ 동문시장 근처 아파트 (약 29만)</b> — 한라산 입구(관음사·성판악) 두 곳 모두 제일 가깝고 평점도 가장 높음. 동문시장 구경도 가능.</li>
+        <li>성산·애월은 바다 감성은 좋지만, 등산하는 날 새벽에 1시간 가까이 운전해야 하고 찜질방도 멀어요.</li>
+        <li>💡 등산 전날 하루만 제주시에서 자고, 나머지는 성산이나 애월에서 자는 방법도 있어요.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section>
+    <h2>🏠 숙소별 정보</h2>
+    <div class="note" style="margin:-4px 0 10px;font-size:.86rem"><span class="ok">◎</span> 좋음 (가깝거나 걸어갈 수 있음) · <span class="mid">△</span> 보통 (차로 좀 가야 하거나 조건이 애매함) · <span class="no">✕</span> 없음 (근처에 없어서 멀리 가야 함)</div>
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <section>
+    <h2>📊 비교표</h2>
+    <div class="note" style="margin:-4px 0 10px;font-size:.86rem"><span class="ok">◎</span> 좋음 · <span class="mid">△</span> 보통 · <span class="no">✕</span> 없음/멂</div>
+    <div class="tablewrap"><table id="tbl"></table></div>
+  </section>
+
+  <section>
+    <h2>⛰️ 한라산 체크 (1월 기준)</h2>
+    <div class="panel">
+      <ul>
+        <li>정상(백록담)까지 가는 코스는 <b>성판악</b>과 <b>관음사</b> 두 개뿐이고, 둘 다 <b>탐방 예약 필수</b> (한라산 탐방예약시스템 visithalla.jeju.go.kr).</li>
+        <li>1월은 동절기 시간 적용: 탐방로 입구 <b>입산 마감 오전 11:30</b>, 정상(동능) <b>하산 오후 1:30</b>, 진달래밭·삼각봉 대피소 하산 오후 3:30. → 보통 새벽에 출발하니까 숙소가 입구에서 가까운 게 중요해요.</li>
+        <li><b>성판악</b>: 왕복 약 19.2km, 평균 9시간. 경사가 완만한 편이지만 가장 김.</li>
+        <li><b>관음사</b>: 왕복 약 17.4km, 평균 10시간. 경사가 더 가팔라서 초보에겐 비추천.</li>
+        <li>겨울 장비 필수: 방한복, <b>아이젠</b>, 여벌옷, 따뜻한 물, 비상식량, (스틱 추천).</li>
+        <li>출발 전날·당일 한라산국립공원 누리집에서 기상과 탐방로 통제 상황 확인하기 (폭설 시 통제됨).</li>
+      </ul>
+    </div>
+  </section>
+
+  <footer>
+    가격은 2026년 11월 23일에 검색한 결과예요(②는 에어비앤비에서 직접 확인한 총액). 날짜·인원에 따라 바뀔 수 있으니 예약 전에 링크에서 다시 확인해 주세요.
+    호텔 평점은 구글 지도 기준이에요.
+  </footer>
+</div>
+
+<script>
+// ---------- data ----------
+const ISLAND = [
+ [126.163,33.290],[126.155,33.318],[126.165,33.345],[126.205,33.372],[126.232,33.395],[126.262,33.418],
+ [126.300,33.448],[126.322,33.462],[126.356,33.476],[126.390,33.490],[126.430,33.503],[126.465,33.516],
+ [126.500,33.522],[126.540,33.528],[126.580,33.532],[126.630,33.538],[126.672,33.546],[126.712,33.556],
+ [126.748,33.562],[126.790,33.560],[126.830,33.547],[126.862,33.532],[126.892,33.514],[126.915,33.492],
+ [126.930,33.472],[126.946,33.462],[126.938,33.450],[126.918,33.440],[126.902,33.418],[126.882,33.385],
+ [126.858,33.352],[126.828,33.325],[126.785,33.305],[126.740,33.290],[126.695,33.278],[126.650,33.266],
+ [126.600,33.250],[126.560,33.240],[126.515,33.238],[126.470,33.240],[126.420,33.243],[126.375,33.236],
+ [126.330,33.228],[126.300,33.216],[126.270,33.208],[126.240,33.214],[126.208,33.236],[126.180,33.262]
+];
+
+const PLACES = [
+ // 숙소
+ {id:1,t:'acc',n:'① 애월 펜션 (공감공간 애월 2호점)',lng:126.3685,lat:33.4765,s:'30~42만 · 관음사 35분 / 성판악 55분 · 근처에 찜질방 없음'},
+ {id:2,t:'acc',n:'② 성산 아이니하우스',lng:126.905,lat:33.4435,s:'약 35만 · 성판악 45~50분 · 참숯가마 찜질방 15분'},
+ {id:3,t:'acc',n:'③ 종달리 베아툼 가든풀빌라',lng:126.900,lat:33.495,s:'약 34만 · 성판악 50분 · 찜질방 25분'},
+ {id:4,t:'acc',n:'④ 동문시장 근처 아파트 (이도1동)',lng:126.532,lat:33.507,s:'약 29만 · 관음사 20분 / 성판악 35분 · 찜질방 15분'},
+ {id:5,t:'acc',n:'⑤ 신제주집 (연동)',lng:126.4925,lat:33.4915,s:'약 23만 · 관음사 25분 / 성판악 40분 · 찜질방 5분 이내'},
+ {id:6,t:'acc',n:'⑥ 신신호텔 제주시티',lng:126.4538,lat:33.4636,s:'14만~ · 관음사 20분 · 찜질방 10분'},
+ {id:7,t:'acc',n:'⑦ 애월 스테이 인 제주',lng:126.3772,lat:33.4832,s:'27만~ · 성판악 55분 · 근처에 찜질방 없음'},
+ {id:8,t:'acc',n:'⑧ 성산 마리나 호텔',lng:126.9145,lat:33.452,s:'15만~ · 성판악 45~50분 · 참숯가마 찜질방 15분'},
+ // 찜질방
+ {t:'jjim',n:'그랜드하이엇 찜질스파',lng:126.4814,lat:33.4852,s:'신제주(그랜드하이엇 6층) · 06:00~익일 02:00 · 깔끔한 편'},
+ {t:'jjim',n:'롯데 불가마 사우나',lng:126.4897,lat:33.4874,la:'r2',s:'연동 · 05:00~22:00 · 찜질방 있음 · 오래됐지만 저렴'},
+ {t:'jjim',n:'도두해수파크',lng:126.4713,lat:33.5085,s:'공항 근처 · 24시간 · 해수 사우나+찜질방'},
+ {t:'jjim',n:'제주 참숯가마 찜질방',lng:126.8635,lat:33.3692,s:'성산 삼달리 · 24시간 · 진짜 참숯 가마, 탕은 없고 샤워만 (후기 기준 성인 15,000원)'},
+ {t:'jjim',n:'김녕 용암해수사우나',lng:126.7559,lat:33.5566,s:'구좌 김녕 · 06:00~21:00 · 목욕탕(찜질방은 아님)'},
+ // 한라산
+ {t:'trail',n:'성판악 탐방로 입구',lng:126.6192,lat:33.3849,s:'정상 코스 · 왕복 약 19.2km · 완만하지만 가장 김 · 예약 필수'},
+ {t:'trail',n:'관음사 탐방로 입구',lng:126.5491,lat:33.4202,s:'정상 코스 · 왕복 약 17.4km · 더 가파름 · 예약 필수'},
+ {t:'peak',n:'한라산 정상 (백록담)',lng:126.5333,lat:33.3617,s:'해발 1,947m'},
+ // 마트
+ {t:'mart',n:'좋은마트 애월',lng:126.3651,lat:33.4712,s:'① 근처 · 06:00~22:00'},
+ {t:'mart',n:'CU 제주중엄점',lng:126.3691,lat:33.4779,s:'①·⑦ 근처 · 24시간'},
+ {t:'mart',n:'성산일출봉농협 하나로마트',lng:126.9117,lat:33.4463,s:'②·⑧ 근처 · 08:00~21:00 · 큰 마트'},
+ {t:'mart',n:'구좌농협 하나로마트 (세화)',lng:126.8534,lat:33.5249,s:'③에서 차로 약 10분 · 08:00~21:00'},
+ {t:'mart',n:'마트로 이도센트럴점',lng:126.5371,lat:33.4907,s:'④ 근처 · 24시간'},
+ {t:'mart',n:'이마트 신제주점',lng:126.4803,lat:33.4846,la:'b',s:'⑤ 근처 · 10:00~23:00'},
+ // 참고
+ {t:'ref',n:'제주공항',lng:126.4930,lat:33.5070,s:''}
+];
+
+const ACC = [
+ {id:1,name:'애월 펜션',sub:'공감공간 애월 2호점',kind:'air',area:'제주시 애월읍 신엄리 (포구 마을, 바다 앞)',
+  price:'30~42만 원',priceNote:'객실별: B-201 30만 · B-302 31.5만 · A-201·A-402 42만',
+  room:'객실마다 퀸 침대 2개 · 욕실 1개(B-201은 1.5개)',rating:'4.86점 (후기 65개)',
+  hal:['mid','관음사 약 35분 / 성판악 약 55분'],mart:['ok','좋은마트(06~22시), CU 중엄점(24시)'],jjim:['no','근처 없음 · 신제주까지 차로 약 25분'],
+  tips:['객실마다 가격 차이가 커요 (30만 vs 42만)','침구는 기준 4인, 추가 침구는 1박 1만 원','체크인 16시 / 체크아웃 11시','오픈한 지 얼마 안 된 숙소'],
+  url:'https://www.airbnb.co.kr/rooms/1775894011756264401?check_in=2027-01-21&check_out=2027-01-24&adults=3'},
+ {id:2,name:'성산 아이니하우스',sub:'무료감귤체험 · 바베큐불멍',kind:'air',area:'서귀포시 성산읍 · 성산일출봉·광치기해변 근처',
+  price:'약 35만 원',priceNote:'에어비앤비에서 직접 확인한 총액 347,822원',
+  room:'침실 2개(퀸 1 / 이층침대+바닥매트), 침대 5개 · 욕실 1개 · 최대 5명',rating:'4.76점 (후기 465개) · 10년 차 슈퍼호스트',
+  hal:['mid','성판악 약 45~50분'],mart:['ok','성산일출봉농협 하나로마트(08~21시, 큼)'],jjim:['mid','제주 참숯가마 찜질방 차로 약 15분(24시간)'],
+  tips:['침대가 많아서 3명이 각자 자기 좋음','욕실이 1개뿐','바비큐는 미리 예약해야 함','주방·세탁기·무료 주차 있음'],
+  url:'https://www.airbnb.co.kr/rooms/14454600?check_in=2027-01-21&check_out=2027-01-24&adults=3'},
+ {id:3,name:'종달리 가든풀빌라',sub:'제주베아툼 가든풀빌라 1F',kind:'air',area:'제주시 구좌읍 종달리 · 종달 해안도로 도보 3분 · 우도·성산 근처',
+  price:'약 34만 원',priceNote:'',
+  room:'침실 1개, 침대 2개 · 욕실 1개',rating:'4.84점 (후기 106개)',
+  hal:['mid','성판악 약 50분'],mart:['mid','걸어갈 거리의 마트는 확인 못 함 · 구좌농협 하나로(세화) 차로 약 10분'],jjim:['mid','참숯가마 찜질방 약 25분 · 김녕 해수사우나(목욕탕) 약 20분'],
+  tips:['침대 2개라 3명이면 한 명은 따로 자야 할 수도 있음','최대 인원이 4명·5명으로 엇갈려 있어 호스트 확인 필요','개인 정원+제트스파(무료), 온수 풀은 1회 10만 원 별도','바비큐 그릴·숯 대여 3만 원'],
+  url:'https://www.airbnb.co.kr/rooms/54046935?check_in=2027-01-21&check_out=2027-01-24&adults=3'},
+ {id:4,name:'동문시장 근처 아파트',sub:'이도1동 · 오락실 있는 큰 집',kind:'air',best:true,area:'제주시 이도1동 · 신산공원 근처 · 동문시장 차로 5분 · 공항 10분',
+  price:'약 29만 원',priceNote:'',
+  room:'침실 1개 · 더블 1개 + 소파베드 4개 · 욕실 1개 · 최대 4명',rating:'4.89점 (후기 245개) · 슈퍼호스트',
+  hal:['ok','관음사 약 20분 / 성판악 약 35분 (가장 가까움)'],mart:['ok','마트로 이도센트럴점(24시)'],jjim:['ok','신제주 찜질방·도두해수파크 차로 약 15분'],
+  tips:['평점이 가장 높음','침대 대부분이 소파베드','버스 정류장 도보 1분','세탁기·무료 주차(건물 주차장)·넷플릭스'],
+  url:'https://www.airbnb.co.kr/rooms/1061383735928300198?check_in=2027-01-21&check_out=2027-01-24&adults=3'},
+ {id:5,name:'신제주집 5호',sub:'제주 신시가지 아파트',kind:'air',best:true,area:'제주시 연동 · 신라·롯데면세점 도보 5분 · 공항 택시 10분',
+  price:'약 23만 원',priceNote:'후보 중 가장 저렴',
+  room:'침실 2개 · 슈퍼싱글 2 + 소파베드 1 + 에어매트 · 욕실 1개 · 최대 4명',rating:'4.72점 (후기 266개)',
+  hal:['ok','관음사 약 25분 / 성판악 약 40분'],mart:['ok','이마트 신제주점(~23시), 하나로마트 노형점'],jjim:['ok','그랜드하이엇 찜질스파·롯데불가마 차로 5분 이내'],
+  tips:['주차타워라 일반 승용차만 가능 — RV·SUV 렌트하면 주차 불가!','초과 인원은 강제 퇴실 (3명은 OK)','다세대 건물이라 술파티·층간소음 금지','체크인 16시 이후'],
+  url:'https://www.airbnb.co.kr/rooms/40808752?check_in=2027-01-21&check_out=2027-01-24&adults=3'},
+ {id:6,name:'신신호텔 제주시티',sub:'',kind:'hotel',area:'제주시 해안동 (공항 남쪽)',
+  price:'14만 원~',priceNote:'3인 객실 시작가',
+  room:'호텔 객실 · 수영장 있음',rating:'구글 3.0점 (28개)',
+  hal:['ok','관음사 약 20분 / 성판악 약 45분'],mart:['ok','호텔 1층 편의점'],jjim:['ok','신제주 찜질방 차로 약 10분'],
+  tips:['최근 리모델링한 듯','청소를 잘 안 해준다는 후기가 많음','위치가 시내에서 살짝 떨어져 있다는 후기'],
+  url:'https://www.agoda.com/ko-kr/accom/property?propertyId=31664464'},
+ {id:7,name:'애월 스테이 인 제주',sub:'',kind:'hotel',area:'제주시 애월읍 애월해안로 · 바다 앞',
+  price:'27만 원~',priceNote:'3인 객실 시작가',
+  room:'패밀리룸은 침실 2 + 거실 구조 · 주방 시설',rating:'구글 4.2점 (622개)',
+  hal:['mid','관음사 약 35분 / 성판악 약 55분'],mart:['ok','CU 중엄점 근처'],jjim:['no','근처 없음 · 신제주까지 약 25분'],
+  tips:['호텔치고 넓음','주차 공간 넉넉','호텔 후보 중 평점이 가장 좋음'],
+  url:'https://www.agoda.com/ko-kr/accom/property?propertyId=17168616'},
+ {id:8,name:'성산 마리나 호텔',sub:'',kind:'hotel',area:'서귀포시 성산읍 고성리 · 일출봉 근처',
+  price:'15만 원~',priceNote:'3인 객실 시작가',
+  room:'호텔 객실 · 간이 주방',rating:'구글 3.5점 (49개)',
+  hal:['mid','성판악 약 45~50분'],mart:['ok','지하 편의점 · 하나로마트 근처'],jjim:['mid','참숯가마 찜질방 차로 약 15분'],
+  tips:['일출봉 뷰 객실 있음','시설이 낡고 청소가 아쉽다는 후기','늦게 오면 주차가 어렵다는 후기'],
+  url:'https://www.agoda.com/ko-kr/accom/property?propertyId=59674051'}
+];
+
+// ---------- projection ----------
+const LNG0=126.12, LAT0=33.58, K=1393, C=Math.cos(33.4*Math.PI/180);
+const X=lng=>(lng-LNG0)*K*C, Y=lat=>(LAT0-lat)*K;
+const VIEWS={
+  all:[0,0,1000,557],
+  city:box(126.43,126.565,33.455,33.518),
+  east:box(126.74,126.96,33.355,33.565),
+  aewol:box(126.34,126.40,33.462,33.492)
+};
+function box(l1,l2,a1,a2){const x=X(l1),y=Y(a2),w=X(l2)-x,h=Y(a1)-y;return [x,y,w,h];}
+
+const svg=document.getElementById('map'), info=document.getElementById('info');
+const NS='http://www.w3.org/2000/svg';
+let view='all', show={acc:true,jjim:true,trail:true,mart:true};
+const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
+
+function render(){
+  const vb=VIEWS[view]; svg.setAttribute('viewBox',vb.join(' '));
+  const s=vb[2]/1000; // scale so markers keep screen size
+  svg.innerHTML='';
+  svg.appendChild(el('rect',{x:vb[0]-50,y:vb[1]-50,width:vb[2]+100,height:vb[3]+100,fill:'#e3eef7'}));
+  svg.appendChild(el('polygon',{points:ISLAND.map(p=>X(p[0])+','+Y(p[1])).join(' '),fill:'#eef3e4',stroke:'#a3b18a','stroke-width':2*s,'stroke-linejoin':'round'}));
+  // mountain shading
+  const hx=X(126.5333),hy=Y(33.3617);
+  [70,45,22].forEach((r,i)=>svg.appendChild(el('ellipse',{cx:hx,cy:hy,rx:r*2.2,ry:r*1.3,fill:['#e2ead3','#d6e0c2','#c9d6b0'][i]})));
+  const zoomed=view!=='all';
+  const order=['ref','mart','trail','peak','jjim','acc'];
+  order.forEach(type=>PLACES.filter(p=>p.t===type).forEach(p=>{
+    const key=(type==='peak')?'trail':type;
+    if(type!=='ref' && !show[key]) return;
+    const x=X(p.lng),y=Y(p.lat), g=el('g',{class:'mk',tabindex:0});
+    if(type==='acc'){
+      const isOut=!!OUT[p.id]; if(isOut) g.setAttribute('opacity','.45');
+      const r=13*s; g.appendChild(el('circle',{cx:x,cy:y,r,fill:isOut?'#9ca3af':'#2563eb',stroke:'#fff','stroke-width':2.5*s}));
+      const t=el('text',{x,y:y+5*s,'text-anchor':'middle','font-size':14*s,'font-weight':700,fill:'#fff'});t.textContent=p.id;g.appendChild(t);
+      if(zoomed){const l=el('text',{x:x+17*s,y:y+5*s,'font-size':13*s,class:'lbl','stroke-width':3.5*s,fill:'#1e3a8a'});l.textContent=p.n.replace(/^.\s/,'');if(isOut)l.setAttribute('text-decoration','line-through');g.appendChild(l);}
+    }else if(type==='jjim'){
+      const w=24*s; g.appendChild(el('rect',{x:x-w/2,y:y-w/2,width:w,height:w,rx:5*s,fill:'#ea580c',stroke:'#fff','stroke-width':2.5*s}));
+      const t=el('text',{x,y:y+5.5*s,'text-anchor':'middle','font-size':15*s,fill:'#fff'});t.textContent='♨';g.appendChild(t);
+      if(zoomed){const l=el('text',{x:x+16*s,y:y+(p.la==='r2'?-4:5)*s,'font-size':12.5*s,class:'lbl','stroke-width':3.5*s,fill:'#9a3412'});l.textContent=p.n;g.appendChild(l);}
+    }else if(type==='trail'){
+      const h=18*s; g.appendChild(el('polygon',{points:`${x},${y-h} ${x-h*0.75},${y+h*0.5} ${x+h*0.75},${y+h*0.5}`,fill:'#15803d',stroke:'#fff','stroke-width':2*s}));
+      const l=el('text',{x:x+14*s,y:y+4*s,'font-size':12.5*s,class:'lbl','stroke-width':3.5*s,fill:'#14532d'});l.textContent=p.n.replace(' 탐방로 입구','');g.appendChild(l);
+    }else if(type==='peak'){
+      const t=el('text',{x,y:y+6*s,'text-anchor':'middle','font-size':18*s});t.textContent='🏔️';g.appendChild(t);
+      const l=el('text',{x,y:y+24*s,'text-anchor':'middle','font-size':12*s,class:'lbl','stroke-width':3.5*s,fill:'#14532d'});l.textContent='한라산';g.appendChild(l);
+    }else if(type==='mart'){
+      g.appendChild(el('circle',{cx:x,cy:y,r:5.5*s,fill:'#6b7280',stroke:'#fff','stroke-width':1.5*s}));
+      if(zoomed){const l=el('text',{x:x+(p.la==='b'?-60:9)*s,y:y+(p.la==='b'?20:-6)*s,'font-size':11*s,class:'lbl','stroke-width':3*s,fill:'#374151'});l.textContent='🛒 '+p.n;g.appendChild(l);}
+    }else if(type==='ref'){
+      const t=el('text',{x,y:y+5*s,'text-anchor':'middle','font-size':14*s});t.textContent='✈️';g.appendChild(t);
+    }
+    if(type!=='ref'){
+      const fire=()=>select(p); g.addEventListener('click',fire);
+      g.addEventListener('keydown',e=>{if(e.key==='Enter')fire();});
+    }else{ g.addEventListener('click',()=>{info.innerHTML='<b>✈️ 제주공항</b>';}); }
+    svg.appendChild(g);
+  }));
+  if(!zoomed){
+    [['제주시',126.52,33.54],['애월',126.33,33.50],['성산',126.95,33.43],['서귀포',126.56,33.22],['구좌',126.80,33.585]].forEach(([n,l,a])=>{
+      const t=el('text',{x:X(l),y:Y(a),'text-anchor':'middle','font-size':13,fill:'#64748b','font-weight':500});t.textContent=n;svg.appendChild(t);
+    });
+  }
+}
+const TYPE_LABEL={acc:'🏠 숙소',jjim:'♨️ 찜질방·사우나',trail:'⛰️ 한라산',peak:'⛰️ 한라산',mart:'🛒 마트·편의점'};
+function select(p){
+  info.innerHTML=`<span style="color:#6b7280;font-size:.8rem">${TYPE_LABEL[p.t]}</span><br><b>${p.n}</b>${p.s?'<br>'+p.s:''}${p.t==='acc'?'<br><a href="#acc-'+p.id+'" style="color:#2563eb;font-size:.85rem">↓ 숙소 카드 보기</a>':''}`;
+  if(p.t==='acc'){highlight(p.id); if(OUT[p.id]) info.innerHTML+='<br><span style="color:#b91c1c;font-size:.85rem">✕ 후보에서 뺌'+(OUT[p.id].reason?' — '+esc(OUT[p.id].reason):'')+'</span>';}
+}
+function highlight(id){
+  document.querySelectorAll('.card').forEach(c=>c.classList.toggle('hl',c.id==='acc-'+id));
+}
+document.getElementById('views').addEventListener('click',e=>{
+  const b=e.target.closest('button'); if(!b) return;
+  view=b.dataset.v; document.querySelectorAll('#views button').forEach(x=>x.classList.toggle('on',x===b)); render();
+});
+document.getElementById('filters').addEventListener('change',e=>{show[e.target.dataset.f]=e.target.checked;render();});
+
+// ---------- cards ----------
+const mark={ok:'◎',mid:'△',no:'✕'};
+const esc=t=>String(t==null?'':t).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const CIRC=['','①','②','③','④','⑤','⑥','⑦','⑧'];
+let OUT={}, mode='loading', dbApi=null;
+function ordered(){return ACC.slice().sort((a,b)=>(!!OUT[a.id]-!!OUT[b.id])||a.id-b.id);}
+function renderCards(){
+ const ro=(mode==='readonly'||mode==='loading');
+ document.getElementById('cards').innerHTML=ordered().map(a=>{const o=OUT[a.id];return `
+ <div class="card${o?' out':''}" id="acc-${a.id}">
+  <div class="top"><div class="num">${a.id}</div>
+   <div><h3>${a.name}${a.kind==='air'?'<span class="tag air">에어비앤비</span>':'<span class="tag hotel">호텔</span>'}${a.best&&!o?'<span class="tag best">추천</span>':''}</h3>
+   <div class="area">${a.sub?a.sub+' · ':''}${a.area}</div></div></div>
+  ${o&&o.reason?`<div class="reason">✕ 뺀 이유: ${esc(o.reason)}</div>`:''}
+  <div class="price">${a.price}</div>${a.priceNote?`<div class="area">${a.priceNote}</div>`:''}
+  <dl>
+   <dt>구성</dt><dd>${a.room}</dd>
+   <dt>평점</dt><dd>${a.rating}</dd>
+   <dt>한라산</dt><dd><span class="${a.hal[0]}">${mark[a.hal[0]]}</span> ${a.hal[1]}</dd>
+   <dt>마트</dt><dd><span class="${a.mart[0]}">${mark[a.mart[0]]}</span> ${a.mart[1]}</dd>
+   <dt>찜질방</dt><dd><span class="${a.jjim[0]}">${mark[a.jjim[0]]}</span> ${a.jjim[1]}</dd>
+  </dl>
+  <ul class="tips">${a.tips.map(t=>`<li>${t}</li>`).join('')}</ul>
+  <a href="${a.url}" target="_blank" rel="noopener">${a.kind==='air'?'에어비앤비':'아고다'}에서 보기 →</a>
+  <div class="ctl">
+   <button data-tog="${a.id}" ${ro?'disabled':''}>${o?'↩ 다시 후보로':'✕ 후보에서 빼기'}</button>
+   ${o?`<input data-reason="${a.id}" placeholder="뺀 이유 (선택, 엔터로 저장)" value="${esc(o.reason)}" ${ro?'disabled':''}>`:''}
+  </div>
+ </div>`}).join('');
+}
+function renderTable(){
+ document.getElementById('tbl').innerHTML=`<tr><th>#</th><th>숙소</th><th>3박 가격</th><th>한라산(차)</th><th>마트</th><th>찜질방</th></tr>`+
+ ordered().map(a=>`<tr class="${OUT[a.id]?'out':''}"><td>${a.id}</td><td><a href="#acc-${a.id}" style="color:inherit">${a.name}</a></td><td>${a.price}</td>
+  <td><span class="${a.hal[0]}">${mark[a.hal[0]]}</span> ${a.hal[1]}</td>
+  <td><span class="${a.mart[0]}">${mark[a.mart[0]]}</span></td>
+  <td><span class="${a.jjim[0]}">${mark[a.jjim[0]]}</span> ${a.jjim[1].split(' · ')[0]}</td></tr>`).join('');
+}
+function renderPick(){
+ const left=ACC.filter(a=>!OUT[a.id]).length;
+ document.getElementById('pickrow').innerHTML=`<span class="cnt">남은 후보 ${left} / ${ACC.length}</span>`+
+  ACC.map(a=>`<button class="pc${OUT[a.id]?' x':''}" data-go="${a.id}">${CIRC[a.id]} ${a.name}</button>`).join('')+
+  (Object.keys(OUT).length&&mode!=='readonly'&&mode!=='loading'?`<button class="reset" data-reset>전부 다시 후보로</button>`:'');
+ const M={loading:'불러오는 중…',
+  shared:'🔗 함께 보는 목록이에요. 여기서 빼면 링크로 보는 모든 사람에게 똑같이 보여요.',
+  readonly:'👀 공유된 목록을 보는 중이에요. 후보를 빼는 건 이 페이지를 만든 사람(또는 수정 권한이 있는 사람)만 할 수 있어요.',
+  local:'💾 지금은 이 기기에서만 저장돼요. 다른 사람 화면에는 반영되지 않아요.'};
+ document.getElementById('mode').textContent=M[mode]||'';
+}
+function refresh(){renderCards();renderTable();renderPick();render();}
+
+const LS='jeju-out-v1';
+function loadLocal(){try{OUT=JSON.parse(localStorage.getItem(LS)||'{}')||{}}catch(e){OUT={}}}
+function saveLocal(){try{localStorage.setItem(LS,JSON.stringify(OUT))}catch(e){}}
+let busy=false;
+async function setOut(id,val,reason){
+ if(busy) return; busy=true;
+ const before=JSON.stringify(OUT);
+ if(val) OUT[id]={out:true,reason:(reason||'').slice(0,200),at:Date.now()}; else delete OUT[id];
+ refresh();
+ try{
+  if(mode==='shared'){
+   const d=dbApi.doc('picks/c'+id);
+   if(val) await d.set(OUT[id]); else await d.delete();
+  }else if(mode==='local'){ saveLocal(); }
+ }catch(e){
+  OUT=JSON.parse(before);
+  if(e&&(e.code==='invalid_argument'||e.code==='revoked'||e.code==='not_granted')) mode='readonly';
+  refresh();
+ }finally{busy=false;}
+}
+document.getElementById('cards').addEventListener('click',e=>{
+ const b=e.target.closest('[data-tog]'); if(!b) return;
+ const id=+b.dataset.tog; setOut(id,!OUT[id],'');
+});
+document.getElementById('cards').addEventListener('keydown',e=>{
+ const i=e.target.closest('[data-reason]'); if(!i||e.key!=='Enter') return;
+ const id=+i.dataset.reason; if((OUT[id]&&OUT[id].reason)!==i.value) setOut(id,true,i.value);
+});
+document.getElementById('cards').addEventListener('change',e=>{
+ const i=e.target.closest('[data-reason]'); if(!i) return;
+ const id=+i.dataset.reason; if(OUT[id]&&OUT[id].reason!==i.value) setOut(id,true,i.value);
+});
+document.getElementById('pickrow').addEventListener('click',async e=>{
+ const g=e.target.closest('[data-go]');
+ if(g){const c=document.getElementById('acc-'+g.dataset.go); highlight(+g.dataset.go); c&&c.scrollIntoView({behavior:'smooth',block:'center'}); return;}
+ if(e.target.closest('[data-reset]')){
+  for(const id of Object.keys(OUT)) await setOut(+id,false);
+ }
+});
+
+// storage: shared db when available, else this device
+(async()=>{
+ let api=null;
+ try{ api = window.claude && window.claude.use ? await window.claude.use('db') : null; }catch(e){ api=null; }
+ if(!api){ mode='local'; loadLocal(); refresh(); return; }
+ dbApi=api;
+ let canWrite=null;
+ try{ const u=await window.claude.use('user'); if(u&&u.can){ canWrite=await u.can('data.write'); } }catch(e){}
+ mode = canWrite===false ? 'readonly' : 'shared';
+ const timer=setTimeout(()=>{ if(mode==='shared'||mode==='readonly'){ document.getElementById('mode').textContent='공유 목록을 아직 불러오지 못했어요. 잠시 후 다시 확인해 주세요.'; } },10000);
+ dbApi.collection('picks').onSnapshot(snap=>{
+  if(!snap.metadata.fromCache) clearTimeout(timer);
+  const next={};
+  snap.docs.forEach(d=>{ if(!d.exists) return; const m=/^c([1-8])$/.exec(d.id); const v=d.data(); if(m&&v&&v.out) next[m[1]]={out:true,reason:typeof v.reason==='string'?v.reason:'',at:v.at}; });
+  OUT=next; refresh();
+ },err=>{ clearTimeout(timer); mode='local'; loadLocal(); refresh(); });
+ refresh();
+})();
+
+loadLocal(); OUT={}; refresh();
+</script>
+</body>
+</html>
