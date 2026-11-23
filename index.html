@@ -33,7 +33,16 @@
   .sw.jjim{background:var(--jjim);border-radius:4px}
   .sw.trail{width:0;height:0;border-left:7px solid transparent;border-right:7px solid transparent;border-bottom:13px solid var(--trail)}
   .sw.mart{background:var(--mart);border-radius:50%;width:10px;height:10px}
-  svg{width:100%;height:auto;display:block;border-radius:10px;background:var(--sea);touch-action:manipulation}
+  svg{width:100%;height:auto;aspect-ratio:1000/557;display:block;border-radius:10px;background:var(--sea);touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none}
+  svg.drag{cursor:grabbing}
+  .mk:focus{outline:none}
+  @media (max-width:600px){svg{aspect-ratio:1/0.78}}
+  .mapwrap{position:relative}
+  .zbtns{position:absolute;right:6px;bottom:6px;display:flex;gap:4px}
+  @media (max-width:600px){.zbtns button{width:30px;height:30px;font-size:1rem}.hint{font-size:.68rem}}
+  .zbtns button{width:36px;height:36px;border-radius:9px;border:1px solid var(--line);background:#fff;font:inherit;font-size:1.15rem;line-height:1;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,.12);color:var(--ink)}
+  .zbtns button.sm{font-size:.95rem}
+  .hint{position:absolute;left:8px;bottom:8px;background:rgba(255,255,255,.9);border-radius:8px;padding:3px 9px;font-size:.75rem;color:var(--sub);pointer-events:none}
   .mk{cursor:pointer}
   .mk text{pointer-events:none}
   .lbl{font-weight:700;paint-order:stroke;stroke:#fff;stroke-linejoin:round}
@@ -122,9 +131,17 @@
           <label><input type="checkbox" data-f="mart" checked><span class="sw mart"></span>마트·편의점</label>
         </div>
       </div>
-      <svg id="map" viewBox="0 0 1000 557" role="img" aria-label="제주도 숙소와 찜질방 위치 지도"></svg>
+      <div class="mapwrap">
+        <svg id="map" viewBox="0 0 1000 557" role="img" aria-label="제주도 숙소와 찜질방 위치 지도"></svg>
+        <div class="zbtns">
+          <button id="zin" aria-label="확대">+</button>
+          <button id="zout" aria-label="축소">−</button>
+          <button id="zreset" class="sm" aria-label="전체 보기">⟲</button>
+        </div>
+        <div class="hint" id="hint">두 손가락으로 확대 · 끌어서 이동</div>
+      </div>
       <div class="info" id="info">지도의 표시를 누르면 정보가 여기에 나와요. 숙소 번호를 누르면 아래 카드로 이동해요.</div>
-      <div class="note">※ 해안선은 대략적인 모양이에요. 에어비앤비(①~⑤)는 정확한 주소가 공개되지 않아 동네 기준 대략 위치로 표시했어요. 이동 시간은 자동차 기준 대략치예요. 겹쳐 보이는 곳은 위의 확대 버튼으로 보면 구분돼요.</div>
+      <div class="note">※ 해안선은 대략적인 모양이에요. 에어비앤비(①~⑤)는 정확한 주소가 공개되지 않아 동네 기준 대략 위치로 표시했어요. 이동 시간은 자동차 기준 대략치예요. 겹쳐 보이는 곳은 손가락 두 개로 벌리거나(PC는 마우스 휠·더블클릭) 오른쪽 아래 + 버튼으로 확대하면 구분돼요.</div>
     </div>
   </section>
 
@@ -210,13 +227,13 @@ const PLACES = [
  {id:2,t:'acc',n:'② 성산 아이니하우스',lng:126.905,lat:33.4435,s:'약 35만 · 성판악 45~50분 · 참숯가마 찜질방 15분'},
  {id:3,t:'acc',n:'③ 종달리 베아툼 가든풀빌라',lng:126.900,lat:33.495,s:'약 34만 · 성판악 50분 · 찜질방 25분'},
  {id:4,t:'acc',n:'④ 동문시장 근처 아파트 (이도1동)',lng:126.532,lat:33.507,s:'약 29만 · 관음사 20분 / 성판악 35분 · 찜질방 15분'},
- {id:5,t:'acc',n:'⑤ 신제주집 (연동)',lng:126.4925,lat:33.4915,s:'약 23만 · 관음사 25분 / 성판악 40분 · 찜질방 5분 이내'},
+ {id:5,t:'acc',n:'⑤ 신제주집 (연동)',lng:126.4965,lat:33.4925,s:'약 23만 · 관음사 25분 / 성판악 40분 · 찜질방 5분 이내'},
  {id:6,t:'acc',n:'⑥ 신신호텔 제주시티',lng:126.4538,lat:33.4636,s:'14만~ · 관음사 20분 · 찜질방 10분'},
  {id:7,t:'acc',n:'⑦ 애월 스테이 인 제주',lng:126.3772,lat:33.4832,s:'27만~ · 성판악 55분 · 근처에 찜질방 없음'},
  {id:8,t:'acc',n:'⑧ 성산 마리나 호텔',lng:126.9145,lat:33.452,s:'15만~ · 성판악 45~50분 · 참숯가마 찜질방 15분'},
  // 찜질방
  {t:'jjim',n:'그랜드하이엇 찜질스파',lng:126.4814,lat:33.4852,s:'신제주(그랜드하이엇 6층) · 06:00~익일 02:00 · 깔끔한 편'},
- {t:'jjim',n:'롯데 불가마 사우나',lng:126.4897,lat:33.4874,la:'r2',s:'연동 · 05:00~22:00 · 찜질방 있음 · 오래됐지만 저렴'},
+ {t:'jjim',n:'롯데 불가마 사우나',lng:126.4897,lat:33.4874,la:'l',s:'연동 · 05:00~22:00 · 찜질방 있음 · 오래됐지만 저렴'},
  {t:'jjim',n:'도두해수파크',lng:126.4713,lat:33.5085,s:'공항 근처 · 24시간 · 해수 사우나+찜질방'},
  {t:'jjim',n:'제주 참숯가마 찜질방',lab:'참숯가마',lng:126.8635,lat:33.3692,s:'성산 삼달리 · 24시간 · 진짜 참숯 가마, 탕은 없고 샤워만 (후기 기준 성인 15,000원)'},
  {t:'jjim',n:'김녕 용암해수사우나',lab:'김녕 해수사우나',lng:126.7559,lat:33.5566,s:'구좌 김녕 · 06:00~21:00 · 목욕탕(찜질방은 아님)'},
@@ -292,31 +309,34 @@ const ACC = [
 ];
 
 // ---------- projection ----------
+let AR=557/1000; function updAR(){const w=svg.clientWidth,h=svg.clientHeight; if(w>0&&h>0) AR=h/w;}
 const LNG0=126.12, LAT0=33.58, K=1393, C=Math.cos(33.4*Math.PI/180);
 const X=lng=>(lng-LNG0)*K*C, Y=lat=>(LAT0-lat)*K;
 const VIEWS={
-  all:[0,0,1000,557],
+  all:[0,0,1000,557,0],
   city:box(126.43,126.565,33.455,33.518),
   east:box(126.74,126.96,33.355,33.565),
   aewol:box(126.34,126.40,33.462,33.492)
 };
-function box(l1,l2,a1,a2){const x=X(l1),y=Y(a2),w=X(l2)-x,h=Y(a1)-y;return [x,y,w,h];}
+function box(l1,l2,a1,a2){const x=X(l1),y=Y(a2),w=X(l2)-x,h=Y(a1)-y;return [x,y,w,h,0.08];}
+function fit(b){let [x,y,w,h]=b;const pd=b[4]||0;x-=w*pd;y-=h*pd;w*=1+2*pd;h*=1+2*pd;
+  if(h/w>AR){const nw=h/AR;x-=(nw-w)/2;w=nw;}else{const nh=w*AR;y-=(nh-h)/2;h=nh;}return [x,y,w,h];}
 
 const svg=document.getElementById('map'), info=document.getElementById('info');
 const NS='http://www.w3.org/2000/svg';
-let view='all', show={acc:true,jjim:true,trail:true,mart:true};
+let cur=[0,0,1000,557], show={acc:true,jjim:true,trail:true,mart:true};
 const el=(t,a)=>{const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;};
 
 function render(){
-  const vb=VIEWS[view]; svg.setAttribute('viewBox',vb.join(' '));
-  const s=vb[2]/1000; // scale so markers keep screen size
+  const vb=cur; svg.setAttribute('viewBox',vb.join(' '));
+  const s=vb[2]/(svg.clientWidth||1000); // svg units per screen px → markers keep the same on-screen size
   svg.innerHTML='';
   svg.appendChild(el('rect',{x:vb[0]-50,y:vb[1]-50,width:vb[2]+100,height:vb[3]+100,fill:'#e3eef7'}));
   svg.appendChild(el('polygon',{points:ISLAND.map(p=>X(p[0])+','+Y(p[1])).join(' '),fill:'#eef3e4',stroke:'#a3b18a','stroke-width':2*s,'stroke-linejoin':'round'}));
   // mountain shading
   const hx=X(126.5333),hy=Y(33.3617);
   [70,45,22].forEach((r,i)=>svg.appendChild(el('ellipse',{cx:hx,cy:hy,rx:r*2.2,ry:r*1.3,fill:['#e2ead3','#d6e0c2','#c9d6b0'][i]})));
-  const zoomed=view!=='all';
+  const zoomed=vb[2]<700;
   const order=['ref','mart','trail','peak','jjim','acc'];
   order.forEach(type=>PLACES.filter(p=>p.t===type).forEach(p=>{
     const key=(type==='peak')?'trail':type;
@@ -330,8 +350,8 @@ function render(){
     }else if(type==='jjim'){
       const w=24*s; g.appendChild(el('rect',{x:x-w/2,y:y-w/2,width:w,height:w,rx:5*s,fill:'#ea580c',stroke:'#fff','stroke-width':2.5*s}));
       const t=el('text',{x,y:y+5.5*s,'text-anchor':'middle','font-size':15*s,fill:'#fff'});t.textContent='♨';g.appendChild(t);
-      if(!zoomed&&p.lab){const l=el('text',{x:x+15,y:y+5,'font-size':12,class:'lbl','stroke-width':3.5,fill:'#9a3412'});l.textContent=p.lab;g.appendChild(l);}
-      if(zoomed){const l=el('text',{x:x+16*s,y:y+(p.la==='r2'?-4:5)*s,'font-size':12.5*s,class:'lbl','stroke-width':3.5*s,fill:'#9a3412'});l.textContent=p.n;g.appendChild(l);}
+      if(!zoomed&&p.lab){const l=el('text',{x:x+15*s,y:y+5*s,'font-size':12*s,class:'lbl','stroke-width':3.5*s,fill:'#9a3412'});l.textContent=p.lab;g.appendChild(l);}
+      if(zoomed){const l=el('text',{x:x+(p.la==='l'?-16:16)*s,'text-anchor':p.la==='l'?'end':'start',y:y+5*s,'font-size':12.5*s,class:'lbl','stroke-width':3.5*s,fill:'#9a3412'});l.textContent=p.n;g.appendChild(l);}
     }else if(type==='trail'){
       const h=18*s; g.appendChild(el('polygon',{points:`${x},${y-h} ${x-h*0.75},${y+h*0.5} ${x+h*0.75},${y+h*0.5}`,fill:'#15803d',stroke:'#fff','stroke-width':2*s}));
       const l=el('text',{x:x+14*s,y:y+4*s,'font-size':12.5*s,class:'lbl','stroke-width':3.5*s,fill:'#14532d'});l.textContent=p.n.replace(' 탐방로 입구','');g.appendChild(l);
@@ -340,19 +360,18 @@ function render(){
       const l=el('text',{x,y:y+24*s,'text-anchor':'middle','font-size':12*s,class:'lbl','stroke-width':3.5*s,fill:'#14532d'});l.textContent='한라산';g.appendChild(l);
     }else if(type==='mart'){
       g.appendChild(el('circle',{cx:x,cy:y,r:5.5*s,fill:'#6b7280',stroke:'#fff','stroke-width':1.5*s}));
-      if(zoomed){const l=el('text',{x:x+(p.la==='b'?-60:9)*s,y:y+(p.la==='b'?20:-6)*s,'font-size':11*s,class:'lbl','stroke-width':3*s,fill:'#374151'});l.textContent='🛒 '+p.n;g.appendChild(l);}
+      if(vb[2]<130){const l=el('text',{x:x+(p.la==='b'?-60:9)*s,y:y+(p.la==='b'?20:-6)*s,'font-size':11*s,class:'lbl','stroke-width':3*s,fill:'#374151'});l.textContent='🛒 '+p.n;g.appendChild(l);}
     }else if(type==='ref'){
       const t=el('text',{x,y:y+5*s,'text-anchor':'middle','font-size':14*s});t.textContent='✈️';g.appendChild(t);
     }
-    if(type!=='ref'){
-      const fire=()=>select(p); g.addEventListener('click',fire);
-      g.addEventListener('keydown',e=>{if(e.key==='Enter')fire();});
-    }else{ g.addEventListener('click',()=>{info.innerHTML='<b>✈️ 제주공항</b>';}); }
+    g.__p=p;
+    g.addEventListener('keydown',e=>{if(e.key==='Enter')pick(p);});
     svg.appendChild(g);
   }));
   if(!zoomed){
+    const s2=s;
     [['제주시',126.52,33.54],['애월',126.33,33.50],['성산',126.95,33.43],['서귀포',126.56,33.22],['구좌',126.80,33.585]].forEach(([n,l,a])=>{
-      const t=el('text',{x:X(l),y:Y(a),'text-anchor':'middle','font-size':13,fill:'#64748b','font-weight':500});t.textContent=n;svg.appendChild(t);
+      const t=el('text',{x:X(l),y:Y(a),'text-anchor':'middle','font-size':13*s2,fill:'#64748b','font-weight':500});t.textContent=n;svg.appendChild(t);
     });
   }
 }
@@ -364,10 +383,65 @@ function select(p){
 function highlight(id){
   document.querySelectorAll('.card').forEach(c=>c.classList.toggle('hl',c.id==='acc-'+id));
 }
+function pick(p){ if(p.t==='ref'){info.innerHTML='<b>✈️ 제주공항</b>';} else select(p); }
+let raf=0;
+function setVB(v,keepBtn){
+  const w=Math.min(1000,Math.max(22,v[2])), h=w*AR;
+  let cx=v[0]+v[2]/2, cy=v[1]+(v[2]*AR)/2;
+  cx=Math.min(1000,Math.max(0,cx)); cy=Math.min(557,Math.max(0,cy));
+  cur=[cx-w/2,cy-h/2,w,h];
+  if(!keepBtn) document.querySelectorAll('#views button').forEach(x=>x.classList.remove('on'));
+  if(!raf) raf=requestAnimationFrame(()=>{raf=0;render();});
+}
+function toSvg(cx,cy){const r=svg.getBoundingClientRect();return [cur[0]+(cx-r.left)/r.width*cur[2],cur[1]+(cy-r.top)/r.height*cur[3]];}
+function zoomAt(cx,cy,f){const r=svg.getBoundingClientRect();const [sx,sy]=toSvg(cx,cy);const w=cur[2]/f;
+  setVB([sx-(cx-r.left)/r.width*w, sy-(cy-r.top)/r.height*w*AR, w]);}
+function zoomCenter(f){const r=svg.getBoundingClientRect();zoomAt(r.left+r.width/2,r.top+r.height/2,f);}
 document.getElementById('views').addEventListener('click',e=>{
   const b=e.target.closest('button'); if(!b) return;
-  view=b.dataset.v; document.querySelectorAll('#views button').forEach(x=>x.classList.toggle('on',x===b)); render();
+  document.querySelectorAll('#views button').forEach(x=>x.classList.toggle('on',x===b));
+  setVB(fit(VIEWS[b.dataset.v]),true);
 });
+document.getElementById('zin').addEventListener('click',()=>zoomCenter(1.6));
+document.getElementById('zout').addEventListener('click',()=>zoomCenter(1/1.6));
+document.getElementById('zreset').addEventListener('click',()=>{document.querySelectorAll('#views button').forEach(x=>x.classList.toggle('on',x.dataset.v==='all'));setVB(fit(VIEWS.all),true);});
+window.addEventListener('resize',()=>{const cx=cur[0]+cur[2]/2,cy=cur[1]+cur[3]/2;updAR();setVB([cx-cur[2]/2,cy-cur[2]*AR/2,cur[2]],true);});
+// drag / pinch / wheel
+const ptrs=new Map(); let moved=0, downP=null;
+svg.addEventListener('pointerdown',e=>{
+  if(e.button!==undefined&&e.button>0) return;
+  ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+  try{svg.setPointerCapture(e.pointerId);}catch(_){}
+  if(ptrs.size===1){moved=0;const m=e.target.closest?e.target.closest('.mk'):null;downP=m&&m.__p?m.__p:null;}
+  else{downP=null;moved=99;}
+  svg.classList.add('drag'); document.getElementById('hint').style.display='none';
+});
+svg.addEventListener('pointermove',e=>{
+  if(!ptrs.has(e.pointerId)) return;
+  const r=svg.getBoundingClientRect();
+  if(ptrs.size===1){
+    const pr=ptrs.get(e.pointerId), dx=e.clientX-pr.x, dy=e.clientY-pr.y;
+    moved+=Math.abs(dx)+Math.abs(dy); ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    if(moved>6) setVB([cur[0]-dx/r.width*cur[2], cur[1]-dy/r.height*cur[3], cur[2]]);
+  }else if(ptrs.size===2){
+    const a=[...ptrs.values()], d0=Math.hypot(a[0].x-a[1].x,a[0].y-a[1].y), m0=[(a[0].x+a[1].x)/2,(a[0].y+a[1].y)/2];
+    ptrs.set(e.pointerId,{x:e.clientX,y:e.clientY});
+    const b=[...ptrs.values()], d1=Math.hypot(b[0].x-b[1].x,b[0].y-b[1].y), m1=[(b[0].x+b[1].x)/2,(b[0].y+b[1].y)/2];
+    if(d0<1) return;
+    const [sx,sy]=toSvg(m0[0],m0[1]), w=cur[2]*d0/d1;
+    setVB([sx-(m1[0]-r.left)/r.width*w, sy-(m1[1]-r.top)/r.height*w*AR, w]);
+  }
+});
+function endPtr(e){
+  if(!ptrs.has(e.pointerId)) return;
+  const single=ptrs.size===1; ptrs.delete(e.pointerId);
+  if(single&&moved<=6&&downP&&e.type==='pointerup') pick(downP);
+  if(ptrs.size===0){downP=null;svg.classList.remove('drag');}
+  else{const k=[...ptrs.keys()][0];}
+}
+svg.addEventListener('pointerup',endPtr); svg.addEventListener('pointercancel',endPtr);
+svg.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*0.0015));},{passive:false});
+svg.addEventListener('dblclick',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,2);});
 document.getElementById('filters').addEventListener('change',e=>{show[e.target.dataset.f]=e.target.checked;render();});
 
 // ---------- cards ----------
@@ -479,7 +553,7 @@ document.getElementById('pickrow').addEventListener('click',async e=>{
  refresh();
 })();
 
-loadLocal(); OUT={}; refresh();
+updAR(); cur=fit(VIEWS.all); loadLocal(); OUT={}; refresh();
 </script>
 </body>
 </html>
